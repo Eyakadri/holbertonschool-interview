@@ -1,11 +1,14 @@
 #!/usr/bin/python3
 def canUnlockAll(boxes):
-    """checks if all boxes can be opened """
+    """
+    checks if all boxes can be opened
+    Arguments:
+    boxes --> list of lists with keys
+    return: true if all boxes can be opened else False"""
     n = len(boxes)
     opened = [False] * n
     opened[0] = True
     keys = set(boxes[0])
-    
     while True:
         new_keys = False
         for i in range(n):
