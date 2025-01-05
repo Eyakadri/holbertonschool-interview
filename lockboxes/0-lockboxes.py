@@ -1,4 +1,11 @@
 #!/usr/bin/python3
+"""
+0-lockboxes Module
+
+this module contains a function to determine if all boxes in a list
+"""
+
+
 def canUnlockAll(boxes):
     """
     checks if all boxes can be opened
