@@ -2,6 +2,7 @@
 """tracks file size & status codes, prints stats every 10 lines or on exit"""
 
 import sys
+"""This script reads HTTP request logs from stdin"""
 
 stats = {}
 valid_codes = {'200', '301', '400', '401', '403', '404', '405', '500'}
