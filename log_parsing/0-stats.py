@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""script to compute request statistics from stdin"""
+"""tracks file size & status codes, prints stats every 10 lines or on exit"""
 
 import sys
 
