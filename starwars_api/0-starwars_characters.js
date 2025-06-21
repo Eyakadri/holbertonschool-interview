@@ -2,27 +2,32 @@
 
 const request = require('request');
 
+// Convert request into a promise for easier use with async/await
+function fetch(url) {
+  return new Promise((resolve, reject) => {
+    request(url, (err, res, body) => {
+      if (err) reject(err);
+      else if (res.statusCode !== 200) reject(new Error(`Status code: ${res.statusCode}`));
+      else resolve(JSON.parse(body));
+    });
+  });
+}
+
+async function printCharacters(movieId) {
+  try {
+    const film = await fetch(`https://swapi-api.alx-tools.com/api/films/${movieId}/`);
+    for (const characterURL of film.characters) {
+      const character = await fetch(characterURL);
+      console.log(character.name);
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
 if (process.argv.length < 3) {
   console.error('Usage: ./0-starwars_characters.js <movie_id>');
   process.exit(1);
 }
 
-const movieId = process.argv[2];
-const apiUrl = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
-
-request(apiUrl, (err, res, body) => {
-  if (err) return console.error(err);
-  if (res.statusCode !== 200) return console.error(`Error: ${res.statusCode}`);
-
-  const film = JSON.parse(body);
-  const characters = film.characters;
-
-  characters.forEach((url) => {
-    request(url, (err, res, body) => {
-      if (!err && res.statusCode === 200) {
-        const character = JSON.parse(body);
-        console.log(character.name);
-      }
-    });
-  });
-});
+printCharacters(process.argv[2]);
