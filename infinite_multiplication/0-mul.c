@@ -37,7 +37,7 @@ int _strlen(char *s)
 }
 
 /**
- * print_error - prints Error and exits
+ * print_error - prints Error and exits with status 98
  */
 void print_error(void)
 {
@@ -53,9 +53,9 @@ void print_error(void)
 }
 
 /**
- * print_number - prints a number given as string (leading zeros stripped)
+ * print_number - prints a number string (skip leading zeros)
  * @num: string number
- * @len: length of the string
+ * @len: length of string
  */
 void print_number(char *num, int len)
 {
@@ -71,23 +71,16 @@ void print_number(char *num, int len)
 }
 
 /**
- * infinite_mul - multiplies two positive numbers given as strings
- * @num1: first number
- * @num2: second number
+ * multiply - performs multiplication and fills result array
+ * @num1: first number string
+ * @num2: second number string
+ * @len1: length of num1
+ * @len2: length of num2
+ * @result: integer array to store multiplication result
  */
-void infinite_mul(char *num1, char *num2)
+void multiply(char *num1, char *num2, int len1, int len2, int *result)
 {
-	int len1 = _strlen(num1), len2 = _strlen(num2);
-	int *result, i, j, carry, n1, n2, sum;
-	int len = len1 + len2;
-	char *res_str;
-
-	result = malloc(sizeof(int) * len);
-	if (!result)
-		print_error();
-
-	for (i = 0; i < len; i++)
-		result[i] = 0;
+	int i, j, n1, n2, sum, carry;
 
 	for (i = len1 - 1; i >= 0; i--)
 	{
@@ -102,8 +95,31 @@ void infinite_mul(char *num1, char *num2)
 		}
 		result[i + j + 1] += carry;
 	}
+}
 
-	/* Convert int array to char array */
+/**
+ * infinite_mul - main function to multiply two large positive numbers
+ * @num1: first number string
+ * @num2: second number string
+ */
+void infinite_mul(char *num1, char *num2)
+{
+	int len1 = _strlen(num1);
+	int len2 = _strlen(num2);
+	int len = len1 + len2;
+	int *result;
+	char *res_str;
+	int i;
+
+	result = malloc(sizeof(int) * len);
+	if (!result)
+		print_error();
+
+	for (i = 0; i < len; i++)
+		result[i] = 0;
+
+	multiply(num1, num2, len1, len2, result);
+
 	res_str = malloc(sizeof(char) * (len + 1));
 	if (!res_str)
 	{
@@ -125,7 +141,7 @@ void infinite_mul(char *num1, char *num2)
  * main - Entry point
  * @argc: argument count
  * @argv: argument vector
- * Return: 0 on success, 98 on failure
+ * Return: 0 on success, exits 98 on failure
  */
 int main(int argc, char **argv)
 {
