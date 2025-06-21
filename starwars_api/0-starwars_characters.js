@@ -3,7 +3,7 @@
 const request = require('request');
 
 // Convert request into a promise for easier use with async/await
-function fetch(url) {
+function fetch (url) {
   return new Promise((resolve, reject) => {
     request(url, (err, res, body) => {
       if (err) reject(err);
@@ -13,7 +13,7 @@ function fetch(url) {
   });
 }
 
-async function printCharacters(movieId) {
+async function printCharacters (movieId) {
   try {
     const film = await fetch(`https://swapi-api.alx-tools.com/api/films/${movieId}/`);
     for (const characterURL of film.characters) {
