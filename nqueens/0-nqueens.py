@@ -60,7 +60,10 @@ def solution_already_recorded(candidate):
         bool: True if solution already exists, False otherwise.
     """
     for sol in results:
-        if all(any(p[0] == c[0] and p[1] == c[1] for p in sol) for c in candidate):
+        if all(
+            any(p[0] == c[0] and p[1] == c[1] for p in sol)
+            for c in candidate
+        ):
             return True
     return False
 
@@ -86,7 +89,9 @@ def find_solutions(row=0, current_positions=None):
 
     for col in range(board_size):
         candidate_pos = positions[row * board_size + col]
-        if not any(can_attack(candidate_pos, placed) for placed in current_positions):
+        if not any(
+            can_attack(candidate_pos, placed) for placed in current_positions
+        ):
             current_positions.append(candidate_pos)
             find_solutions(row + 1, current_positions)
             current_positions.pop()
@@ -96,7 +101,10 @@ def main():
     global positions, board_size
 
     board_size = read_and_validate_args()
-    positions = [[i // board_size, i % board_size] for i in range(board_size ** 2)]
+    positions = [
+        [i // board_size, i % board_size]
+        for i in range(board_size ** 2)
+    ]
     find_solutions()
 
     for sol in results:
