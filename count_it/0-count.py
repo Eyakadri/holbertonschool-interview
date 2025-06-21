@@ -23,15 +23,18 @@ def count_words(subreddit, word_list, counts=None, after=None):
     keywords = [w.lower() for w in word_list]
 
     url = f'https://www.reddit.com/r/{subreddit}/hot.json'
-    headers = {'User-Agent': 'Python3:keyword-counter:v1.0 (by /u/yourusername)'}
+    headers = {
+        'User-Agent': 'Python3:keyword-counter:v1.0 (by /u/yourusername)'
+    }
     params = {'limit': 100}
     if after:
         params['after'] = after
 
     try:
-        response = requests.get(url, headers=headers, params=params, allow_redirects=False)
+        response = requests.get(url, headers=headers,
+                                params=params, allow_redirects=False)
         if response.status_code != 200:
-            return
+            return 
         data = response.json()
     except Exception:
         return
