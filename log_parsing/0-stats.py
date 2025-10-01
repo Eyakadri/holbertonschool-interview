@@ -61,6 +61,9 @@ def main():
         # Print final statistics if there are any processed lines
         if line_count > 0 and line_count % 10 != 0:
             print_stats(total_size, status_counts)
+        elif line_count == 0:
+            # Even if no valid lines were processed, print File size: 0
+            print_stats(total_size, status_counts)
                 
     except KeyboardInterrupt:
         # Print final statistics on keyboard interrupt
