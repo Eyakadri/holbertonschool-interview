@@ -57,6 +57,10 @@ def main():
                     
             except (ValueError, IndexError):
                 continue
+        
+        # Print final statistics if there are any processed lines
+        if line_count > 0 and line_count % 10 != 0:
+            print_stats(total_size, status_counts)
                 
     except KeyboardInterrupt:
         # Print final statistics on keyboard interrupt
