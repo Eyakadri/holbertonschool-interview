@@ -28,13 +28,13 @@ def main():
             if not line:
                 continue
             
-            # Split the line to check basic format
-            parts = line.split()
-            if len(parts) < 9:
-                continue
-            
             # Check if the line contains the required GET request pattern
             if '"GET /projects/260 HTTP/1.1"' not in line:
+                continue
+            
+            # Split the line and check basic structure
+            parts = line.split()
+            if len(parts) < 9:
                 continue
             
             try:
@@ -42,32 +42,8 @@ def main():
                 file_size = int(parts[-1])
                 status_code = parts[-2]
                 
-                # Validate IP address format (first part)
-                ip_parts = parts[0].split('.')
-                if len(ip_parts) != 4:
-                    continue
-                
-                # Check if all IP parts are valid numbers
-                valid_ip = True
-                for ip_part in ip_parts:
-                    try:
-                        ip_num = int(ip_part)
-                        if ip_num < 0 or ip_num > 255:
-                            valid_ip = False
-                            break
-                    except ValueError:
-                        valid_ip = False
-                        break
-                
-                if not valid_ip:
-                    continue
-                
-                # Check if status code is a valid 3-digit number
-                try:
-                    int(status_code)
-                    if len(status_code) != 3:
-                        continue
-                except ValueError:
+                # Basic validation: status code should be 3 digits
+                if not status_code.isdigit() or len(status_code) != 3:
                     continue
                 
                 # Update total size
