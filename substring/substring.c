@@ -82,6 +82,63 @@ static int is_valid_substring(char const *s, char const **words,
 }
 
 /**
+ * add_index_to_result - Add index to result array, resize if needed
+ * @result: Current result array
+ * @count: Pointer to current count
+ * @capacity: Pointer to current capacity
+ * @index: Index to add
+ *
+ * Return: Updated result array or NULL on failure
+ */
+static int *add_index_to_result(int *result, int *count, int *capacity, int index)
+{
+	int *temp;
+
+	if (*count >= *capacity)
+	{
+		*capacity *= 2;
+		temp = realloc(result, *capacity * sizeof(int));
+		if (!temp)
+		{
+			free(result);
+			return (NULL);
+		}
+		result = temp;
+	}
+	result[(*count)++] = index;
+	return (result);
+}
+
+/**
+ * search_substrings - Search for valid substrings in the string
+ * @s: String to scan
+ * @words: Array of words
+ * @nb_words: Number of words
+ * @params: Array containing [s_len, word_len, total_len]
+ * @result_info: Array containing [count, capacity]
+ * @result: Result array
+ *
+ * Return: Updated result array or NULL on failure
+ */
+static int *search_substrings(char const *s, char const **words, int nb_words,
+	int *params, int *result_info, int *result)
+{
+	int i, s_len = params[0], total_len = params[2], word_len = params[1];
+
+	for (i = 0; i <= s_len - total_len; i++)
+	{
+		if (is_valid_substring(s + i, words, nb_words, word_len))
+		{
+			result = add_index_to_result(result, &result_info[0],
+				&result_info[1], i);
+			if (!result)
+				return (NULL);
+		}
+	}
+	return (result);
+}
+
+/**
  * find_substring - Find all substrings containing concatenated words
  * @s: String to scan
  * @words: Array of words
@@ -92,49 +149,32 @@ static int is_valid_substring(char const *s, char const **words,
  */
 int *find_substring(char const *s, char const **words, int nb_words, int *n)
 {
-	int s_len, word_len, total_len, *result, *temp;
-	int i, count = 0, capacity = 10;
+	int params[3], result_info[2] = {0, 10}, *result;
 
 	*n = 0;
 	if (!s || !words || nb_words <= 0)
 		return (NULL);
 
-	s_len = str_len(s);
-	word_len = str_len(words[0]);
-	total_len = word_len * nb_words;
+	params[0] = str_len(s);
+	params[1] = str_len(words[0]);
+	params[2] = params[1] * nb_words;
 
-	if (s_len < total_len)
+	if (params[0] < params[2])
 		return (NULL);
 
-	result = malloc(capacity * sizeof(int));
+	result = malloc(result_info[1] * sizeof(int));
 	if (!result)
 		return (NULL);
 
-	for (i = 0; i <= s_len - total_len; i++)
-	{
-		if (is_valid_substring(s + i, words, nb_words, word_len))
-		{
-			if (count >= capacity)
-			{
-				capacity *= 2;
-				temp = realloc(result, capacity * sizeof(int));
-				if (!temp)
-				{
-					free(result);
-					return (NULL);
-				}
-				result = temp;
-			}
-			result[count++] = i;
-		}
-	}
+	result = search_substrings(s, words, nb_words, params, result_info, result);
+	if (!result)
+		return (NULL);
 
-	*n = count;
-	if (count == 0)
+	*n = result_info[0];
+	if (result_info[0] == 0)
 	{
 		free(result);
 		return (NULL);
 	}
-
 	return (result);
 }
