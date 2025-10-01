@@ -1,1 +1,0 @@
-pascal_triangle
