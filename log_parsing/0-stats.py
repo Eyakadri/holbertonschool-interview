@@ -3,7 +3,6 @@
 Module that parses a log and prints stats to stdout
 """
 import sys
-import re
 
 def print_stats(total_size, status_counts):
     """Print the current statistics"""
@@ -21,26 +20,55 @@ def main():
     status_counts = {}
     line_count = 0
     
-    # Regular expression pattern for log format validation
-    pattern = r'^(\d{1,3}\.){3}\d{1,3} - \[.*\] "GET /projects/260 HTTP/1\.1" \d{3} \d+$'
-    
     try:
         for line in sys.stdin:
             line = line.strip()
             
-            # Check if line matches the expected format
-            if not re.match(pattern, line):
+            # Skip empty lines
+            if not line:
                 continue
             
-            # Split the line and extract status code and file size
+            # Split the line to check basic format
             parts = line.split()
             if len(parts) < 9:
+                continue
+            
+            # Check if the line contains the required GET request pattern
+            if '"GET /projects/260 HTTP/1.1"' not in line:
                 continue
             
             try:
                 # Extract file size (last element) and status code (second to last)
                 file_size = int(parts[-1])
                 status_code = parts[-2]
+                
+                # Validate IP address format (first part)
+                ip_parts = parts[0].split('.')
+                if len(ip_parts) != 4:
+                    continue
+                
+                # Check if all IP parts are valid numbers
+                valid_ip = True
+                for ip_part in ip_parts:
+                    try:
+                        ip_num = int(ip_part)
+                        if ip_num < 0 or ip_num > 255:
+                            valid_ip = False
+                            break
+                    except ValueError:
+                        valid_ip = False
+                        break
+                
+                if not valid_ip:
+                    continue
+                
+                # Check if status code is a valid 3-digit number
+                try:
+                    int(status_code)
+                    if len(status_code) != 3:
+                        continue
+                except ValueError:
+                    continue
                 
                 # Update total size
                 total_size += file_size
