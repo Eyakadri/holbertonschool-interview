@@ -2,46 +2,66 @@
 
 /**
  * linear_skip - Searches for a value in a sorted skip list of integers
- * @list: Pointer to the head of the skip list
+ * @list: Pointer to the head of the skip list to search in
  * @value: Value to search for
  *
- * Return: Pointer to the node where value is located, or NULL if not found
+ * Return: Pointer to the first node where value is located, or NULL
  */
 skiplist_t *linear_skip(skiplist_t *list, int value)
 {
-	skiplist_t *start = list, *end = NULL;
+	skiplist_t *current, *prev;
 
-	if (!list)
+	if (list == NULL)
 		return (NULL);
 
-	while (start->express && start->express->n < value)
+	current = list;
+	prev = NULL;
+
+	/* Use express lane to find the correct section */
+	while (current->express != NULL)
 	{
-		printf("Value checked at index [%lu] = [%d]\n",
-			start->express->index, start->express->n);
-		start = start->express;
+		printf("Value checked at index [%lu] = [%d]\n", current->index, current->n);
+		
+		if (current->express->n >= value)
+			break;
+		
+		prev = current;
+		current = current->express;
 	}
 
-	if (start->express)
+	/* If we're at the last express lane node, check its value */
+	if (current->express == NULL)
 	{
-		end = start->express;
-		printf("Value checked at index [%lu] = [%d]\n", end->index, end->n);
+		printf("Value checked at index [%lu] = [%d]\n", current->index, current->n);
+		
+		/* Find the end of the list to determine the range */
+		while (current->next != NULL)
+			current = current->next;
+		
+		printf("Value found between indexes [%lu] and [%lu]\n",
+			prev ? prev->index : list->index, current->index);
+		
+		/* Go back to start of search section */
+		current = prev ? prev : list;
 	}
 	else
 	{
-		end = start;
-		while (end->next)
-			end = end->next;
+		printf("Value found between indexes [%lu] and [%lu]\n",
+			current->index, current->express->index);
 	}
 
-	printf("Value found between indexes [%lu] and [%lu]\n",
-		start->index, end->index);
-
-	while (start && start->index <= end->index)
+	/* Linear search in the identified section */
+	while (current != NULL)
 	{
-		printf("Value checked at index [%lu] = [%d]\n", start->index, start->n);
-		if (start->n == value)
-			return (start);
-		start = start->next;
+		printf("Value checked at index [%lu] = [%d]\n", current->index, current->n);
+		
+		if (current->n == value)
+			return (current);
+		
+		if (current->n > value)
+			break;
+		
+		current = current->next;
 	}
 
 	return (NULL);
