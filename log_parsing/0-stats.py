@@ -28,21 +28,30 @@ def main():
             if not line:
                 continue
             
-            # Check if the line contains the required GET request pattern
-            if '"GET /projects/260 HTTP/1.1"' not in line:
-                continue
-            
-            # Split the line and check basic structure
-            parts = line.split()
-            if len(parts) < 9:
-                continue
-            
             try:
-                # Extract file size (last element) and status code (second to last)
-                file_size = int(parts[-1])
-                status_code = parts[-2]
+                # Parse the line according to the format specification
+                # Format: <IP Address> - [<date>] "GET /projects/260 HTTP/1.1" <status code> <file size>
                 
-                # Basic validation: status code should be 3 digits
+                # Find the position of the GET request
+                get_pos = line.find('"GET /projects/260 HTTP/1.1"')
+                if get_pos == -1:
+                    continue
+                
+                # Extract everything after the GET request
+                after_get = line[get_pos + len('"GET /projects/260 HTTP/1.1"'):].strip()
+                
+                # Split to get status code and file size
+                parts = after_get.split()
+                if len(parts) < 2:
+                    continue
+                
+                status_code = parts[0]
+                file_size_str = parts[1]
+                
+                # Validate and convert file size
+                file_size = int(file_size_str)
+                
+                # Validate status code (should be a 3-digit integer)
                 if not status_code.isdigit() or len(status_code) != 3:
                     continue
                 
